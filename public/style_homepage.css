@@ -72,10 +72,17 @@ body {
 /* ici on code la vue mobile */
 /* 1er media query <480px */
 
+/*permet de fixer la barre du header*/
+header{
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
 
 #topbar {
     display: flex;
     flex-direction: column;
+   
 }
 
 .line1 {

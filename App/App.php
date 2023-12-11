@@ -2,8 +2,10 @@
 
 namespace App;
 
-use App\Controller\AuthController;
 use MiladRahimi\PhpRouter\Router;
+use App\Controller\AuthController;
+use App\Controller\UserController;
+use App\Controller\AdminController;
 use App\Controller\PizzaController;
 use Core\Database\DatabaseConfigInterface;
 use MiladRahimi\PhpRouter\Exceptions\RouteNotFoundException;
@@ -65,8 +67,18 @@ class App implements DatabaseConfigInterface
         $this->router->get('/pizza/{id}', [PizzaController::class, 'getPizzaById']);
         //route pour le formulaire de login
         $this->router->get('/connexion', [AuthController::class, 'loginForm']);
+        //route qui recoit le formulaire de login
+        $this->router->post('/login', [AuthController::class, 'login']);
         //route pour le formulaire d'inscription
         $this->router->get('/inscription', [AuthController::class, 'registerForm']);
+        //route qui recoit le formulaire de création de compte
+        $this->router->post('/register', [AuthController::class, 'register']);
+        //route pour acceder au compte de l'utilisateur
+        $this->router->get('/account/{id}', [UserController::class, 'account']);
+
+        /*PARTIE BACK OFFICE*/
+        //route pour acceder à l'interface admin
+        $this->router->get('/admin/home', [AdminController::class, 'home']);
     }
 
     //3: méthode qui va démarrer le router

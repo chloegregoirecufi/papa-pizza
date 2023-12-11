@@ -20,9 +20,10 @@
     <!-- si l'utilisateur n'est pas en session on redirige sur connexion -->
     <?php
 
-    use App\AppRepoManager;
-
-    // if (!$auth::isAuth()) $auth::redirect('/connexion') 
+    use Core\Session\Session;
+    if($auth::isAuth()) $user_id = Session::get(Session::USER)->id;
+    
+        
     ?>
     <div id="container">
 
@@ -59,16 +60,34 @@
                         <nav class="custom-nav-profil">
                             <ul class="custom-ul-profil">
                                 <li class="custom-link-profil">
-                                    <a href="/connexion">Se connecter
-                                        <img class="custom-svg" src="/assets/images/icon/user.svg" alt="icone utilisateur">
-                                    </a>
+                                    <!-- si je suis en cession on affiche mon compte -->
+                                    <?php if($auth::isAuth()) : ?>
+                                        <a href="/account/<?= $user_id ?>">Mon compte
+                                            <img class="custom-svg" src="/assets/images/icon/user.svg" alt="icone utilisateur">
+                                        </a>
+
+
+                                    <?php else : ?>
+
+                                        <a href="/connexion">Se connecter
+                                            <img class="custom-svg" src="/assets/images/icon/user.svg" alt="icone utilisateur">
+                                        </a>
+
+                                    <?php endif ?>
                                 </li>
                                 <li class="custom-link-profil end-link">
-                                    <a href="#">
-                                        <img class="custom-svg" src="/assets/images/icon/cart.svg" alt="icone panier">
-                                    </a>
-                                </li>
+                                    <?php if($auth::isAuth() && $auth::isAdmin()) : ?>
+                                        <a href="/admin/home">
+                                            <img class="custom-svg" src="/assets/images/icon/admin.svg" alt="icone back office">
+                                        </a>
+                                    <?php else : ?>
 
+                                        <a href="#">
+                                            <img class="custom-svg" src="/assets/images/icon/cart.svg" alt="icone panier">
+                                        </a>
+
+                                    <?php endif ?>
+                                </li>
                             </ul>
                         </nav>
                     </div>
