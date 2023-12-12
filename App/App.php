@@ -75,10 +75,29 @@ class App implements DatabaseConfigInterface
         $this->router->post('/register', [AuthController::class, 'register']);
         //route pour acceder au compte de l'utilisateur
         $this->router->get('/account/{id}', [UserController::class, 'account']);
+        //route pour se déconnecter
+        $this->router->get('/logout', [AuthController::class, 'logout']);
 
         /*PARTIE BACK OFFICE*/
         //route pour acceder à l'interface admin
         $this->router->get('/admin/home', [AdminController::class, 'home']);
+        $this->router->get('/admin/user/list', [AdminController::class, 'listUser']);
+        $this->router->get('/admin/team/list', [AdminController::class, 'listTeam']);
+        $this->router->get('/admin/pizza/list', [AdminController::class, 'listPizza']);
+        $this->router->get('/admin/order/list', [AdminController::class, 'listOrder']);
+       
+
+
+        //route pour supprimer un user
+        $this->router->get('/admin/user/delete/{id}', [AdminController::class, 'deleteUser']);
+        //route pour ajouter un membre d'équipe 
+        $this->router->get('/admin/team/add', [AdminController::class, 'addTeam']);
+        //route qui recevra le formulaire d'ajout d'un membre d'équipe
+        $this->router->post('/register-team', [AuthController::class, 'registerTeam']);
+        //route pour ajouter une pizza
+        $this->router->get('/admin/pizza/add', [AdminController::class, 'addPizza']);
+        //route qui receptionne les données
+        $this->router->post('/add-pizza-form', [AdminController::class, 'addPizzaForm']);
     }
 
     //3: méthode qui va démarrer le router

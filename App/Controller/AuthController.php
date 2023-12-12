@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Controller;
 
@@ -28,7 +28,7 @@ class AuthController extends Controller
 
     public function userExist(string $email): bool
     {
-        $user =AppRepoManager::getRm()->getUserRepository()->findUserByEmail($email);
+        $user = AppRepoManager::getRm()->getUserRepository()->findUserByEmail($email);
         return !is_null($user);
     }
 
@@ -42,7 +42,7 @@ class AuthController extends Controller
         //on supprime les balises html
         $value = strip_tags($value);
         //on supprime les antislash
-        $value = stripslashes($value); 
+        $value = stripslashes($value);
         //on supprime les caracteres speciaux 
         $value = htmlspecialchars($value);
 
@@ -55,10 +55,10 @@ class AuthController extends Controller
     {
         $view = new View('auth/login');
 
-       $view_data = [
-        //permet de recupérer les message d'erreurs du formulaire (s'il y en a)
-        'form_result' => Session::get(Session::FORM_RESULT)
-       ];
+        $view_data = [
+            //permet de recupérer les message d'erreurs du formulaire (s'il y en a)
+            'form_result' => Session::get(Session::FORM_RESULT)
+        ];
 
         $view->render($view_data);
     }
@@ -68,15 +68,15 @@ class AuthController extends Controller
     {
         $view = new View('auth/register');
 
-       $view_data = [
-        //permet de recupérer les message d'erreurs du formulaire (s'il y en a)
-        'form_result' => Session::get(Session::FORM_RESULT)
-       ];
+        $view_data = [
+            //permet de recupérer les message d'erreurs du formulaire (s'il y en a)
+            'form_result' => Session::get(Session::FORM_RESULT)
+        ];
 
         $view->render($view_data);
     }
 
-    
+
     //méthode qui receptionne les données du formulaire de connexion
     public function login(ServerRequest $request)
     {
@@ -88,24 +88,24 @@ class AuthController extends Controller
         $user = new User();
 
         //on vérifie que les champs soient remplis
-        if(empty( $post_data['email']) || empty( $post_data['password'])){
+        if (empty($post_data['email']) || empty($post_data['password'])) {
             $form_result->addError(new FormError('Veuillez renseigner tous les champs'));
-        }else{
+        } else {
             $email = strtolower(($this->validInput($post_data['email'])));
             //on va vérifier que l'email existe en bdd
             $user = AppRepoManager::getRm()->getUserRepository()->findUserByEmail($email);
-           //si on a un retour négatif
-           if(is_null($user)){
-               $form_result->addError(new FormError('Email et/ou mot de passe incorrect'));
-           }else{
+            //si on a un retour négatif
+            if (is_null($user)) {
+                $form_result->addError(new FormError('Email et/ou mot de passe incorrect'));
+            } else {
                 //si on a un retour positif on vérifie que le mdp est correct
-                if(!password_verify($this->validInput($post_data['password']), $user->password)){
-                $form_result->addError(new FormError('Email et/ou mdp incorrect'));
+                if (!password_verify($this->validInput($post_data['password']), $user->password)) {
+                    $form_result->addError(new FormError('Email et/ou mdp incorrect'));
                 }
-           }
+            }
         }
         //si on a des erreurson les stock en session et on renvoie vers la page de connexion
-        if($form_result->hasErrors()){
+        if ($form_result->hasErrors()) {
             Session::set(Session::FORM_RESULT, $form_result);
             self::redirect('/connexion');
         }
@@ -113,8 +113,8 @@ class AuthController extends Controller
         //si tout est OK on stock l'utilisateur en session et on le redirige vers la page d'accueil
         $user->password = '';
         Session::set(Session::USER, $user);
+        Session::remove(Session::FORM_RESULT);
         self::redirect('/');
-        
     }
 
     //méthode qui receptionne les donnes du formulaire d'inscription
@@ -126,52 +126,104 @@ class AuthController extends Controller
         $user = new User();
 
         //on verifie que tous lesc hamps sont remplis 
-        if(
+        if (
             empty($data_form['email']) ||
             empty($data_form['password']) ||
             empty($data_form['password_confirm']) ||
             empty($data_form['lastname']) ||
             empty($data_form['firstname']) ||
-            empty($data_form['phone']) 
-        ){
+            empty($data_form['phone'])
+        ) {
             $form_result->addError(new FormError('Veuillez renseigner tous les champs'));
-        }else if($data_form['password'] !==$data_form['password_confirm']){
+        } else if ($data_form['password'] !== $data_form['password_confirm']) {
             $form_result->addError(new FormError('Les mots de passe ne correspondent pas'));
-
-        }else if(!$this->validEmail($data_form['email'])){
+        } else if (!$this->validEmail($data_form['email'])) {
             $form_result->addError(new FormError('L\'email n\'est pas valide'));
-
-        }else if(!$this->validPassword($data_form['password'])){
+        } else if (!$this->validPassword($data_form['password'])) {
             $form_result->addError(new FormError('Le mdp doit contenir au moins 8 caractères, 14 maj, 1 min et 1 chiffre'));
-
-        }else if($this->userExist($data_form['email'])){
+        } else if ($this->userExist($data_form['email'])) {
             $form_result->addError(new FormError('cet email est deja existant'));
-        }else{
+        } else {
             //on peut enregistrer notre nouvel user
             $data_user = [
-            'email' => strtolower($this->validInput($data_form['email'])),
-            'password'=> password_hash($this->validInput($data_form['password']), PASSWORD_BCRYPT),
-            'lastname' => $this->validInput($data_form['lastname']),
-            'firstname' => $this->validInput($data_form['firstname']),
-            'phone' => $this->validInput($data_form['phone'])
+                'email' => strtolower($this->validInput($data_form['email'])),
+                'password' => password_hash($this->validInput($data_form['password']), PASSWORD_BCRYPT),
+                'lastname' => $this->validInput($data_form['lastname']),
+                'firstname' => $this->validInput($data_form['firstname']),
+                'phone' => $this->validInput($data_form['phone'])
             ];
 
             $user = AppRepoManager::getRm()->getUserRepository()->addUser($data_user);
         }
 
         //s'il y a des erreurs on les stocks en session et on redirige vers la page d'inscription
-        if($form_result->hasErrors()){
+        if ($form_result->hasErrors()) {
             Session::set(Session::FORM_RESULT, $form_result);
             self::redirect('/inscription');
         }
 
         //si tout est ok on enregistre l'utilisateur en session et on redirige vers la page d'acceuil
         //on oublie pas de supprimé le mdp 
-        $user->password= '';
+        $user->password = '';
         Session::set(Session::USER, $user);
+        Session::remove(Session::FORM_RESULT);
         //on redirige vers la page d'(acceuil)
         self::redirect('/');
     }
+
+    //méthode qui recoit le formulaire d'ajout d'un membre d'équipe 
+    public function registerTeam(ServerRequest $request)
+    {
+        //on vérifie que l'utilisateur est connecté et est admin
+        if (!AuthController::isAuth() || !AuthController::isAdmin()) self::redirect('/');
+
+        //permet de recevoir les données sous forme de tableau associatif (getParseBody)
+        $data_form = $request->getParsedBody();
+        $form_result = new FormResult();
+        $user = new User();
+
+        //on verifie que tous les champs sont remplis 
+        if (
+            empty($data_form['email']) ||
+            empty($data_form['password']) ||
+            empty($data_form['password_confirm']) ||
+            empty($data_form['lastname']) ||
+            empty($data_form['firstname']) ||
+            empty($data_form['phone'])
+        ) {
+            $form_result->addError(new FormError('Veuillez renseigner tous les champs'));
+        } else if ($data_form['password'] !== $data_form['password_confirm']) {
+            $form_result->addError(new FormError('Les mots de passe ne correspondent pas'));
+        } else if (!$this->validEmail($data_form['email'])) {
+            $form_result->addError(new FormError('L\'email n\'est pas valide'));
+        } else if (!$this->validPassword($data_form['password'])) {
+            $form_result->addError(new FormError('Le mdp doit contenir au moins 8 caractères, 14 maj, 1 min et 1 chiffre'));
+        } else if ($this->userExist($data_form['email'])) {
+            $form_result->addError(new FormError('cet email est deja existant'));
+        } else {
+            //on peut enregistrer notre nouvel user
+            $data_user = [
+                'email' => strtolower($this->validInput($data_form['email'])),
+                'password' => password_hash($this->validInput($data_form['password']), PASSWORD_BCRYPT),
+                'lastname' => $this->validInput($data_form['lastname']),
+                'firstname' => $this->validInput($data_form['firstname']),
+                'phone' => $this->validInput($data_form['phone'])
+            ];
+
+            $user = AppRepoManager::getRm()->getUserRepository()->addTeam($data_user);
+        }
+
+        //s'il y a des erreurs on les stocks en session et on redirige vers la page d'inscription
+        if ($form_result->hasErrors()) {
+            Session::set(Session::FORM_RESULT, $form_result);
+            self::redirect('/admin/team/add');
+        }
+
+        //on redirige vers la page d'(acceuil)
+        Session::remove(Session::FORM_RESULT);
+        self::redirect('/admin/team/list');
+    }
+
 
     //méthode qui vérifie si le user est connecter
     public static function isAuth(): bool
@@ -185,7 +237,12 @@ class AuthController extends Controller
         return Session::get(Session::USER)->is_admin;
     }
 
-
-
-
+    //m"thode pour se déconnecter
+    public function logout()
+    {
+        //on detruit la session 
+        Session::remove(Session::USER);
+        //on redirige vers la page d'accueil 
+        self::redirect('/');
+    }
 }

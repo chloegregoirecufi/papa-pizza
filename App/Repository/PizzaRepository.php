@@ -20,11 +20,13 @@ class PizzaRepository extends Repository
 
         //on déclare la requête SQL
         $query = sprintf(
-            'SELECT `id`, `name`, `image_path`
-            FROM %s
-            WHERE `user_id` = 1 
-            AND `is_active` = 1',
-            $this->getTableName()
+            'SELECT p.`id`, p.`name`, p.`image_path`
+            FROM %1$s AS p
+            INNER JOIN %2$s AS u ON p.`user_id`=u.`id`
+            WHERE u.`is_admin` = 1 
+            AND p.`is_active` = 1',
+            $this->getTableName(),
+            AppRepoManager::getRm()->getUserRepository()->getTableName()
 
         );
 
@@ -40,6 +42,43 @@ class PizzaRepository extends Repository
 
         return $array_result;
     }
+
+    //on créer une méthode qui va récupérer toutes les pizzas avec ses infos
+    public function getAllPizzasWithInfo(): array
+    {
+        //on déclare un tableau vide
+        $array_result = [];
+
+        //on déclare la requête SQL
+        $query = sprintf(
+            'SELECT p.`id`, p.`name`, p.`image_path`
+            FROM %1$s AS p
+            INNER JOIN %2$s AS u ON p.`user_id`=u.`id`
+            WHERE u.`is_admin` = 1 
+            AND p.`is_active` = 1',
+            $this->getTableName(),
+            AppRepoManager::getRm()->getUserRepository()->getTableName()
+
+        );
+
+        //on peut directement executer la requete avec la méthode query()
+        $stmt = $this->pdo->query($query);
+        //on vérifie si la requête s'est bien exécutée
+        if(!$stmt) return $array_result;
+
+        //on récupère les données de la table dans une boucle
+        while($row_data = $stmt->fetch()){
+            $pizza = new Pizza($row_data);
+
+            $pizza->ingredients = AppRepoManager::getRm()->getPizzaIngredientRepository()->getIngredientByPizzaId($pizza->id);
+            $pizza->prices = AppRepoManager::getRm()->getPriceRepository()->getPriceByPizzaId($pizza->id);
+
+            $array_result[] = $pizza;
+        }
+
+        return $array_result;
+    }
+
 
     //on créer une méthode qui va récup une pizza par son id
     public function getPizzaById(int $pizza_id): ?Pizza

@@ -13,13 +13,13 @@ class IngredientRepository extends Repository
     }
 
     //méthode qui récupère la liste des ingrédients actifs
-    public function getIngredientActive()
+    public function getIngredientActive(): array
     {
         //on déclare un tableau vide 
         $array_result = [];
         //on créer la requete 
         $query = sprintf(
-            'SELECT * FROM %s WHERE is_actuve = 1',
+            'SELECT * FROM %s WHERE is_active = 1',
             $this->getTableName()
         );
 
