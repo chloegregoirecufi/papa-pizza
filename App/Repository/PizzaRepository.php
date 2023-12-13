@@ -116,5 +116,32 @@ class PizzaRepository extends Repository
         return $pizza; 
     }
 
+    //méthode pour créer une pizza
+    public function insertPizza(array $data): ?Pizza
+    {
+        //on créer le requete 
+        $query = sprintf(
+            'INSERT INTO %s (name, image_path, is_active, user_id)
+            VALUE (:name, :image_path, :is_active, :user_id)',
+            $this->getTableName()
+        );
+
+        //on préare la requete
+        $stmt = $this->pdo->prepare($query);
+
+        //on verifie si la requete s'est bien preparée
+        if(!$stmt) return null;
+        
+        //on execute la requete en bindant les parametre
+        $stmt->execute($data);
+
+        //on récupère l'ide de la pizza fraichement crée
+        $pizza_id = $this->pdo->lastInsertId();
+
+        //on retourne la pizza
+        return $this->getPizzaById($pizza_id);
+
+    }
+
    
 }
