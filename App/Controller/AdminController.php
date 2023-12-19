@@ -242,4 +242,29 @@ class AdminController extends Controller
         self::redirect('/admin/pizza/list');
     }
 
+    //on désactive une pizza
+    public function deletePizza(int $id)
+    {
+        //on vérifie que l'admin est connecté
+        if (!AuthController::isAdmin()) self::redirect('/');
+
+
+        $form_result = new FormResult();
+        //on appelle la methode desactive un user
+        $deletePizza = AppRepoManager::getRm()->getPizzaRepository()->deletePizza($id);
+        //si la méthode renvoi false on stock un message d'erreur
+        if (!$deletePizza) {
+            $form_result->addError(new FormError('Une erreur est survenue lors de la suppression de la pizza'));
+        }
+
+        //s'il y a des erreurs on les enregistre en session
+        if ($form_result->hasErrors()) {
+            Session::set(Session::FORM_RESULT, $form_result);
+            self::redirect('/admin/pizza/list');
+        }
+        //si tout est ok on redirige vers la liste utilisateur 
+        Session::remove(Session::FORM_RESULT);
+        self::redirect('/admin/pizza/list');
+    }
+
 }

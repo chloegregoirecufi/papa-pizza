@@ -79,6 +79,44 @@ class PizzaRepository extends Repository
         return $array_result;
     }
 
+    //on créer une méthode qui va récuperer toutes les pizzas que l'utilisateur à créer
+    public function getAllPizzasByUser($id): array
+    {
+        //on déclare un tableau vide
+        $array_result = [];
+
+        //on déclare la requête SQL
+        $query = sprintf(
+            'SELECT p.`id`, p.`name`, p.`image_path`
+            FROM %1$s AS p
+            INNER JOIN %2$s AS u ON p.`user_id`=u.`id`
+            WHERE p.`is_active` = 1
+            AND p.`user_id` = :id',
+            $this->getTableName(),
+            AppRepoManager::getRm()->getUserRepository()->getTableName()
+
+        );
+
+        //on peut directement executer la requete avec la méthode query()
+        $stmt = $this->pdo->prepare($query);
+        //on vérifie si la requête s'est bien exécutée
+        if(!$stmt) return $array_result;
+        $stmt->execute([
+            'id' => $id,
+        ]);
+
+        //on récupère les données de la table dans une boucle
+        while($row_data = $stmt->fetch()){
+            $pizza = new Pizza($row_data);
+
+            $pizza->ingredients = AppRepoManager::getRm()->getPizzaIngredientRepository()->getIngredientByPizzaId($pizza->id);
+            $pizza->prices = AppRepoManager::getRm()->getPriceRepository()->getPriceByPizzaId($pizza->id);
+
+            $array_result[] = $pizza;
+        }
+
+        return $array_result;
+    }
 
     //on créer une méthode qui va récup une pizza par son id
     public function getPizzaById(int $pizza_id): ?Pizza
@@ -142,6 +180,27 @@ class PizzaRepository extends Repository
         return $this->getPizzaById($pizza_id);
 
     }
+
+    //méthode qui désactive une pizza
+    public function deletePizza(int $id): bool 
+    {
+        //on créer la requete
+         $query = sprintf(
+            'UPDATE %s SET `is_active` = 0 WHERE `id` =:id',
+             $this->getTableName()
+        );
+
+        //on prépare la requete
+        $stmt = $this->pdo->prepare($query);
+
+        //on verifie que la requete est bien préparée
+        if (!$stmt) return false;
+
+        //on execute la requete si la requete est passé on retourne true sinon false
+        return $stmt->execute(['id' => $id]);
+            
+    }
+
 
    
 }

@@ -1,3 +1,4 @@
+
 <h1 class="title title-page">Notre carte</h1>
 <div class="d-flex justify-content-center">
     <div class="d-flex flex-row flex-wrap my-3 justify-content-center col-lg-8 align-content-center">
@@ -17,5 +18,10 @@
             </div>
 
         <?php endforeach ?>
+
     </div>
+</div>
+<!-- Boutton pour ajouter un nouvelle pizza -->
+<div class="user-box-add admin-container">
+    <a class="call-action" href="/user/pizza/add">Personnalisé sa pizza</a>
 </div>

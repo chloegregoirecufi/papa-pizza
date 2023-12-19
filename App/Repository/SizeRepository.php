@@ -12,9 +12,15 @@ class SizeRepository extends Repository
         return ' size';
     }
 
-    //méthode qui recupère tout les tailles
+    //méthode qui recupère toutes les tailles
     public function getAllSize()
     {
         return $this->readAll(Size::class);
+    }
+
+    //méthode qui atribue un prix par taille
+    public function getSize()
+    {
+        
     }
 }

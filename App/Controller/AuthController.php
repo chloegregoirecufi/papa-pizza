@@ -77,6 +77,7 @@ class AuthController extends Controller
     }
 
 
+
     //méthode qui receptionne les données du formulaire de connexion
     public function login(ServerRequest $request)
     {
@@ -210,7 +211,7 @@ class AuthController extends Controller
                 'phone' => $this->validInput($data_form['phone'])
             ];
 
-            $user = AppRepoManager::getRm()->getUserRepository()->addTeam($data_user);
+            $user = AppRepoManager::getRm()->getUserRepository()->modifUser($data_user);
         }
 
         //s'il y a des erreurs on les stocks en session et on redirige vers la page d'inscription
@@ -237,7 +238,7 @@ class AuthController extends Controller
         return Session::get(Session::USER)->is_admin;
     }
 
-    //m"thode pour se déconnecter
+    //méthode pour se déconnecter
     public function logout()
     {
         //on detruit la session 

@@ -45,7 +45,7 @@
                     </td>
                     <td class="footer-description">
         
-                    <a onclick="return confirm('Etes-vous certain de vouloir la supprimer ?')" class="button-delete" href="/admin/user/delete/<?= $pizza->id ?>"><i class="bi bi-trash"></i></a>
+                    <a onclick="return confirm('Etes-vous certain de vouloir la supprimer ?')" class="button-delete" href="/admin/pizza/delete/<?= $pizza->id ?>"><i class="bi bi-trash"></i></a>
                     </td>
                 </tr>
             <?php endforeach ?>

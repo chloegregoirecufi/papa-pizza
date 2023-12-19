@@ -20,8 +20,16 @@
     <!-- si l'utilisateur n'est pas en session on redirige sur connexion -->
     <?php
 
-    use Core\Session\Session;
-    if($auth::isAuth()) $user_id = Session::get(Session::USER)->id;
+use App\AppRepoManager;
+use Core\Session\Session;
+    if($auth::isAuth()) {
+        $user_id = Session::get(Session::USER)->id;
+        $lastname = Session::get(Session::USER)->lastname;
+        $firstname = Session::get(Session::USER)->firstname;
+        $order_id = AppRepoManager::getRm()->getOrderRepository()->findOrderIdByUser($user_id);
+       
+
+    }
     
         
     ?>
@@ -62,7 +70,7 @@
                                 <li class="custom-link-profil">
                                     <!-- si je suis en cession on affiche mon compte -->
                                     <?php if($auth::isAuth()) : ?>
-                                        <a href="/account/<?= $user_id ?>">Mon compte
+                                        <a href="/account/<?= $user_id ?>" ><?= $lastname .' ' . $firstname ?>
                                             <img class="custom-svg" src="/assets/images/icon/user.svg" alt="icone utilisateur">
                                         </a>
 
@@ -82,7 +90,7 @@
                                         </a>
                                     <?php else : ?>
 
-                                        <a href="#">
+                                        <a href="/user/panier/<?php echo $user_id  ?>">
                                             <img class="custom-svg" src="/assets/images/icon/cart.svg" alt="icone panier">
                                         </a>
 

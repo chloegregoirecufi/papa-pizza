@@ -67,6 +67,46 @@ class UserRepository extends Repository
        
     }
 
+    //methode qui modifie les données de user
+    public function modifUser(array $data): ? User
+    {
+       $data_more = [
+        'is_admin' => 0,
+        'is_active' => 1,
+       ];
+       //on fusionne les 2 tableaux 
+       //$data = array_merge($data, $data_more);
+       //die();
+       
+       //on créer la requete 
+       $query = sprintf(
+           'UPDATE %s SET 
+            `lastname` =:lastname, 
+            `firstname` =:firstname, 
+            `email` =:email, 
+            `phone` =:phone, 
+            `address` =:address, 
+            `zip_code` =:zip_code, 
+            `city` =:city
+        WHERE `id` =:id',
+        $this->getTableName()
+        );
+  
+
+       //on prépare le requete
+       $stmt = $this->pdo->prepare($query);
+       //on vérifie que la requete est bien préparée 
+       if(!$stmt) return null;
+
+       //on execute la requete
+       $stmt->execute($data);
+
+       //on recupere l'utilisateur grace à cette id
+       return $this->readById(User:: class, $data['id']);
+       
+    }
+
+
     //méthode qui récupère un user par son id
     public function findUserById(int $id): ?User
     {
@@ -157,7 +197,7 @@ class UserRepository extends Repository
  
         //on créer la requete 
         $query = sprintf(
-         'INSERT INTO %s (`email`, `password`, `lastname`, `firstname`, `phone`, `is_admin`, `is_active`)
+         'INSER INTO %s (`email`, `password`, `lastname`, `firstname`, `phone`, `is_admin`, `is_active`)
          VALUES (:email, :password, :lastname, :firstname, :phone, :is_admin, :is_active)',
          $this->getTableName()
         );
@@ -175,6 +215,37 @@ class UserRepository extends Repository
         //on recupere l'utilisateur grace à cette id
         return $this->readById(User:: class, $id);
         
-     }
+    }
+
+    //méthode qui ajoute une pizza personnalisé 
+    public function addPizzaCustom(array $data)
+    {
+        $data_more = [
+            'is_admin' => 0,
+            'is_active' => 1,
+           ];
+           //on fusionne les 2 tableaux 
+           $data = array_merge($data, $data_more);
+    
+           //on créer la requete 
+           $query = sprintf(
+            'INSERT INTO %s (`user_id`, `name`, `ingredients`, `size_id`)
+            VALUES (:user_id, :name, :ingredients, :size_id)',
+            $this->getTableName()
+           );
+    
+           //on prépare le requete
+           $stmt = $this->pdo->prepare($query);
+           //on vérifie que la requete est bien préparée 
+           if(!$stmt) return null;
+    
+           //on execute la requete
+           $stmt->execute($data);
+    
+           //on récupère l'id de l'utilisateur qui vient d'etre enregistrer
+           $id = $this->pdo->lastInsertId();
+           //on recupere l'utilisateur grace à cette id
+           return $this->readById(User:: class, $id);
+    }
  
 }

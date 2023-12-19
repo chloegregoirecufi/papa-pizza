@@ -24,7 +24,7 @@ class App implements DatabaseConfigInterface
     private static ?self $instance = null;
 
     //méthode public appelé au démarrage de l'application dans index.php
-    public static function getApp():self
+    public static function getApp(): self
     {
         if (is_null(self::$instance)) {
             self::$instance = new self();
@@ -63,7 +63,7 @@ class App implements DatabaseConfigInterface
         //exemple de routes avec un controller
         // $this->router->get('/', [ToyController::class, 'index']);
         $this->router->get('/', [PizzaController::class, 'home']);
-        $this->router->get('/pizzas' , [PizzaController::class, 'getPizzas']);
+        $this->router->get('/pizzas', [PizzaController::class, 'getPizzas']);
         $this->router->get('/pizza/{id}', [PizzaController::class, 'getPizzaById']);
         //route pour le formulaire de login
         $this->router->get('/connexion', [AuthController::class, 'loginForm']);
@@ -85,9 +85,10 @@ class App implements DatabaseConfigInterface
         $this->router->get('/admin/team/list', [AdminController::class, 'listTeam']);
         $this->router->get('/admin/pizza/list', [AdminController::class, 'listPizza']);
         $this->router->get('/admin/order/list', [AdminController::class, 'listOrder']);
-       
 
-
+        /*ADMIN*/
+        //route pour ajouter un utilisateur
+        $this->router->get('/user/pizza/add', [AdminController::class, 'addPizza']);
         //route pour supprimer un user
         $this->router->get('/admin/user/delete/{id}', [AdminController::class, 'deleteUser']);
         //route pour ajouter un membre d'équipe 
@@ -96,8 +97,38 @@ class App implements DatabaseConfigInterface
         $this->router->post('/register-team', [AuthController::class, 'registerTeam']);
         //route pour ajouter une pizza
         $this->router->get('/admin/pizza/add', [AdminController::class, 'addPizza']);
+        //route pour supprimé une pizza
+        $this->router->get('/admin/pizza/delete/{id}', [AdminController::class, 'deletePizza']);
         //route qui receptionne les données
         $this->router->post('/add-pizza-form', [AdminController::class, 'addPizzaForm']);
+
+
+        /*PARTIE BACK OFFICE USER*/
+        //route interface information personnel
+        $this->router->get('/user/compte/{id}', [UserController::class, 'compte']);
+        //route pour modifier information personnel
+        $this->router->get('/user/compte/modification/{id}', [UserController::class, 'modification']);
+        //route qui receptione les données modifier de l'user
+        $this->router->post('/register-modification/{id}', [UserController::class, 'registerInfoUser']);
+        //route pour pizza dans panier 
+        $this->router->get('/user/panier/{id}', [UserController::class, 'panier']);
+        //route qui receptionne les données de panier
+        $this->router->post('/add-pizza-panier', [UserController::class, 'addPizzaPanier']);
+        //route interface commandes
+        $this->router->get('/user/commandes/{id}', [UserController::class, 'commandesUser']);
+        //route interface personnalisation de pizza
+        $this->router->get('/user/pizza/list/{id}', [UserController::class, 'listPizza']);
+
+
+        /*USER*/
+        //route pour que l'utilisateur accède à son compte
+        $this->router->get('/user/account', [UserController::class, 'home']);
+        //route pour la vue des pizza 
+        $this->router->get('/pizzas', [UserController::class, 'getPizzas']);
+        //route pour ajouter une pizza pour user
+        $this->router->get('/user/pizza/add', [UserController::class, 'addPizza']);
+        //route qui receptionne les données
+        $this->router->post('/user/add-pizza-form', [UserController::class, 'addPizzaForm']);
     }
 
     //3: méthode qui va démarrer le router

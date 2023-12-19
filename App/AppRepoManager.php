@@ -11,6 +11,7 @@ use App\Repository\PizzaRepository;
 use App\Repository\PriceRepository;
 use App\Repository\OrderRowRepository;
 use App\Repository\IngredientRepository;
+use App\Repository\PizzaCustomRepository;
 use Core\Repository\RepositoryManagerTrait;
 use App\Repository\PizzaIngredientRepository;
 
@@ -28,6 +29,7 @@ class AppRepoManager
     private SizeRepository $sizeRepository;
     private UnitRepository $unitRepository;
     private UserRepository $userRepository;
+
 
 
 
